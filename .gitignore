@@ -1,5 +1,6 @@
 
 /module-3/.env
 /module-3/.env.local
+/module-3/.env.prod
 
 /module-3/node_modules/
