@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { NotFoundError } from "../errors/NotFoundError";
 
 const todos = [
   { id: 1, title: "Learn Node.js", completed: false },
@@ -15,7 +16,7 @@ export const getTodoById = (req: Request, res: Response) => {
 
   const todo = todos.find(todo => todo.id === id);
 
-  if (!todo) throw new Error('Nothing found');
+  if (!todo) throw new NotFoundError('Todo not found');
 
   res.json(todo);
 }
@@ -36,7 +37,7 @@ export const updateTodo = (req: Request, res: Response) => {
 
   const todoIndex = todos.findIndex(todo => todo.id === id);
 
-  if (todoIndex < 0) throw new Error('Nothing found');
+  if (todoIndex < 0) throw new NotFoundError('Todo not found');
 
   todos[todoIndex] = updatedTodo;
 
@@ -48,7 +49,7 @@ export const deleteTodo = (req: Request, res: Response) => {
 
   const todoIndex = todos.findIndex(todo => todo.id === id);
 
-  if (todoIndex < 0) throw new Error('Nothing found');
+  if (todoIndex < 0) throw new NotFoundError('Todo not found');
 
   todos.splice(todoIndex, 1);
 
