@@ -8,7 +8,7 @@
     "tsc": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run tsc-init && npm test",
-    "dev": "tsx src/index.ts"
+    "dev": "tsx --env-file=.env ./src/index.ts"
   },
   "keywords": [],
   "author": "",
