@@ -8,6 +8,7 @@
     "dev": "ts-node-dev --respawn src/app.ts"
   },
   "dependencies": {
+    "celebrate": "^15.0.3",
     "express": "^5.1.0"
   },
   "devDependencies": {

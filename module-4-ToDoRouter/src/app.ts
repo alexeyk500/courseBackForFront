@@ -1,6 +1,7 @@
 import express from "express";
 import appRouter from "./routes";
 import path from "node:path";
+import { errors } from 'celebrate'
 
 const app = express();
 
@@ -11,6 +12,9 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use(express.json());
 
 app.use(appRouter);
+
+// Обработчик ошибок валидации celebrate
+app.use(errors());
 
 app.listen(3000, ()=>{
   console.log('Server started on 3000');
