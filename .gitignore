@@ -4,3 +4,4 @@
 /module-3/.env.prod
 
 /module-3/node_modules/
+!/module-4-Express/node_modules/
