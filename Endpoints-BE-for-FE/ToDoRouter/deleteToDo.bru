@@ -1,0 +1,18 @@
+meta {
+  name: deleteToDo
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:3000/todos/2
+  body: json
+  auth: inherit
+}
+
+body:json {
+    {
+      "title": "Learn Node.js",
+      "completed": true
+    }
+}
