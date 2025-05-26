@@ -1,4 +1,5 @@
 import express from "express";
+import { getMainPage, postMainPage } from "./controllers/main";
 
 const app = express();
 
@@ -12,9 +13,15 @@ app.use((req, res, next) => {
   next();
 })
 
-app.get('/', (req, res) => {
-  res.send('<h1 style="color: blue">Hello from Main page</h1>')
-})
+//Body parser for Json
+app.use(express.json());
+
+//Body parser for Urlencoded
+app.use(express.urlencoded({extended: false}));
+
+app.get('/', getMainPage);
+
+app.post('/', postMainPage);
 
 app.get('/about', (req, res) => {
   res.send('<h1 style="color: green">Hello from About page</h1>')

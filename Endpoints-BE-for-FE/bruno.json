@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "BE-for-FE",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

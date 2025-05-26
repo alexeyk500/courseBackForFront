@@ -1,0 +1,17 @@
+meta {
+  name: MainPage Post - Json
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:3000
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "title": "A500-title"
+  }
+}
