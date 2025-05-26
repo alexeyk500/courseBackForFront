@@ -8,7 +8,8 @@
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run tsc-init && npm test",
-    "dev": "tsx --env-file=.env ./src/index.ts"
+    "dev": "tsx --env-file=.env ./src/index.ts",
+    "dev-dotenv": "tsx ./src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,7 @@
   "type": "commonjs",
   "devDependencies": {
     "@types/node": "^22.15.21",
+    "dotenv": "^16.5.0",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3"
   },
