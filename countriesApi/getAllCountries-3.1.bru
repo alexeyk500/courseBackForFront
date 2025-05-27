@@ -1,0 +1,15 @@
+meta {
+  name: getAllCountries-3.1
+  type: http
+  seq: 3
+}
+
+get {
+  url: https://restcountries.com/v3.1/all?fields=name,capital,flags,population,region
+  body: none
+  auth: inherit
+}
+
+params:query {
+  fields: name,capital,flags,population,region
+}

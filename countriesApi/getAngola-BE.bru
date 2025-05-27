@@ -1,0 +1,47 @@
+meta {
+  name: getAngola-BE
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://localhost:3000/countries/name/Angola
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("should match expected json", function () {
+    const expectedJson = {
+    "name": "Angola",
+    "nativeName": "Angola",
+    "flag": "https://flagcdn.com/ao.svg",
+    "capital": "Luanda",
+    "population": 32866268,
+    "region": "Africa",
+    "subregion": "Middle Africa",
+    "topLevelDomain": [
+      ".ao"
+    ],
+    "currencies": [
+      "Angolan kwanza"
+    ],
+    "languages": [
+      "Portuguese"
+    ],
+    "borders": [
+      "COG",
+      "COD",
+      "ZMB",
+      "NAM"
+    ],
+    "neighbors": [
+      "Congo",
+      "Congo (Democratic Republic of the)",
+      "Zambia",
+      "Namibia"
+    ]
+  }
+    expect(res.getBody()).to.deep.eql(expectedJson);
+  });
+}

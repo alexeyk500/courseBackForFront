@@ -1,23 +1,32 @@
-import {Request, Response} from 'express';
-
-const BASE_URL = 'https://restcountries.com/v2/';
+import {Request, Response, NextFunction} from 'express';
+import { transformCountry } from '../utils/transformCountry';
+import { NotFoundError } from '../errors/NotFoundError';
+import { BASE_URL } from '../constants/urlsContants';
+import { getNeighbors } from '../utils/getNeighbors';
+import { transformAllCountries } from '../utils/transformAllCountries';
 
 export const getAllCountries = async (req: Request, res: Response) => {
   const result = await fetch(BASE_URL + 'all?fields=name,capital,flags,population,region');
-  const data = await result.json();
-  res.send(data)
+  const data = await result.json() as any[];
+  const transformedAllCountries = transformAllCountries(data)
+  res.send(transformedAllCountries)
 }
 
-export const getCountryByName = async (req: Request, res: Response) => {
+export const getCountryByName = async (req: Request, res: Response, next: NextFunction) => {
   const name = req.params.name
   const result = await fetch(BASE_URL + 'name/' + name);
   const data = await result.json();
-  res.send(data)
-}
 
-export const getCountryByCodes = async (req: Request, res: Response) => {
-  const codes = req.query.codes
-  const result = await fetch(BASE_URL + 'alpha?codes=' + codes);
-  const data = await result.json();
-  res.send(data)
+  const country = data[0];
+  if(!country) {
+    return next(new NotFoundError('Country not found'))
+  }
+
+  const neighborsCodes = country.borders?.join(',');
+  const neighbors = neighborsCodes ? await getNeighbors(neighborsCodes) : [] ;
+
+  const preparedCountry = transformCountry(country) as any;
+  preparedCountry.neighbors = neighbors
+
+  res.send(preparedCountry)
 }

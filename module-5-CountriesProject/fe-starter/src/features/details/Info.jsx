@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { useNeighbors } from './use-neighbors.js';
 
 const Wrapper = styled.section`
   margin-top: 3rem;
@@ -100,10 +99,10 @@ export const Info = (props) => {
     currencies = [],
     languages = [],
     borders = [],
+    neighbors = [],
     push,
   } = props;
 
-  const neighbors = useNeighbors(borders);
 
   return (
     <Wrapper>
@@ -138,14 +137,14 @@ export const Info = (props) => {
             </ListItem>
             <ListItem>
               <b>Currency</b>{' '}
-              {currencies.map((c) => (
-                <span key={c.code}>{c.name} </span>
+              {currencies.map((cur, ind) => (
+                <span key={ind}>{cur} </span>
               ))}
             </ListItem>
             <ListItem>
               <b>Top Level Domain</b>{' '}
-              {languages.map((l) => (
-                <span key={l.name}>{l.name}</span>
+              {languages.map((cur, ind) => (
+                <span key={ind}>{cur}</span>
               ))}
             </ListItem>
           </List>
@@ -156,9 +155,9 @@ export const Info = (props) => {
             <span>There is no border countries</span>
           ) : (
             <TagGroup>
-              {neighbors.map((countryName) => (
+              {neighbors.map((countryName, ind) => (
                 <Tag
-                  key={countryName}
+                  key={ind}
                   onClick={() => push(`/country/${countryName}`)}
                 >
                   {countryName}
