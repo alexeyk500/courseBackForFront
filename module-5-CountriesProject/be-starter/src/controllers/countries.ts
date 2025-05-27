@@ -4,11 +4,13 @@ import { NotFoundError } from '../errors/NotFoundError';
 import { BASE_URL } from '../constants/urlsContants';
 import { getNeighbors } from '../utils/getNeighbors';
 import { transformAllCountries } from '../utils/transformAllCountries';
+import { cacheResponse } from '../redis/redisUtils';
 
 export const getAllCountries = async (req: Request, res: Response) => {
   const result = await fetch(BASE_URL + 'all?fields=name,capital,flags,population,region');
   const data = await result.json() as any[];
   const transformedAllCountries = transformAllCountries(data)
+  await cacheResponse(res, transformedAllCountries);
   res.send(transformedAllCountries)
 }
 
@@ -28,5 +30,6 @@ export const getCountryByName = async (req: Request, res: Response, next: NextFu
   const preparedCountry = transformCountry(country) as any;
   preparedCountry.neighbors = neighbors
 
+  await cacheResponse(res, preparedCountry);
   res.send(preparedCountry)
 }
