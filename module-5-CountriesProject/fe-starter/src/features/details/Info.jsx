@@ -144,7 +144,7 @@ export const Info = (props) => {
             <ListItem>
               <b>Top Level Domain</b>{' '}
               {languages.map((cur, ind) => (
-                <span key={ind}>{cur}</span>
+                <span key={ind}>{`${cur} `}</span>
               ))}
             </ListItem>
           </List>
