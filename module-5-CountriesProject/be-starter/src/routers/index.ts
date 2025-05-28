@@ -1,5 +1,5 @@
-import {Router} from 'express';
-import countriesRouter from "./countries";
+import { Router } from 'express';
+import countriesRouter from './countries';
 
 const appRouter = Router();
 

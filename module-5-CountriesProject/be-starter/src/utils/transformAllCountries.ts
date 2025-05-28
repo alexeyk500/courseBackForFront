@@ -1,4 +1,3 @@
-
 const mapCountry = (country: any) => {
   return {
     name: country.name.common,
@@ -7,21 +6,21 @@ const mapCountry = (country: any) => {
     population: country.population,
     flags: {
       svg: country.flags.svg,
-      png: country.flags.png
+      png: country.flags.png,
     },
-  }
-}
+  };
+};
 
 const compareCountryName = (firstCountry: any, secondCountry: any): number => {
   if (firstCountry.name < secondCountry.name) {
-    return -1
+    return -1;
   }
   if (firstCountry.name > secondCountry.name) {
-    return 1
+    return 1;
   }
-  return 0
-}
+  return 0;
+};
 
 export const transformAllCountries = (countries: any[]) => {
-  return countries.map(mapCountry).sort(compareCountryName)
-}
+  return countries.map(mapCountry).sort(compareCountryName);
+};

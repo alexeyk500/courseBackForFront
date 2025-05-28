@@ -1,12 +1,12 @@
 import { extractValues } from './extractValues';
 
 const extractNativeName = (nativeName: any) => {
-  return (Object.values(nativeName)[0] as any).common
-}
+  return (Object.values(nativeName)[0] as any).common;
+};
 
 const extractCurrencies = (currency: any) => {
-  return Object.values(currency).map((val: any)=>val.name)
-}
+  return Object.values(currency).map((val: any) => val.name);
+};
 
 export const transformCountry = (country: any) => {
   return {
@@ -21,5 +21,5 @@ export const transformCountry = (country: any) => {
     currencies: extractCurrencies(country.currencies),
     languages: extractValues(country.languages),
     borders: country.borders,
-  }
-}
+  };
+};
