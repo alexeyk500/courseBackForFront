@@ -59,9 +59,10 @@ export const getUserById = async (
 ) => {
   try {
     const id = req.params.id;
-    const user = await UserModel.findById(id).orFail(
-      () => new NotFoundError('User does not exist'),
-    );
+    const user = await UserModel.findById(id)
+      .select('+password')
+      .orFail(() => new NotFoundError('User does not exist'));
+    console.log('getUserByIdr', user);
     res.send(user);
   } catch (err) {
     if (err instanceof MongooseError.CastError) {

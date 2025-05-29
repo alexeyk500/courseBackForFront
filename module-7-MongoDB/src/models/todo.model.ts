@@ -1,10 +1,22 @@
 import { Schema, Document, model, Model } from 'mongoose';
 import { IUser } from './user.model';
 
+const CategorySchema = new Schema({
+  title: String,
+  color: String,
+});
+
+const TagSchema = new Schema({
+  title: String,
+  color: String,
+});
+
 interface ITodo extends Document {
   title: string;
   completed: boolean;
   owner: IUser;
+  categories: {title: string, color: string}[];
+  tag: {title: string, color: string} | null;
 }
 
 const TodoSchema = new Schema<ITodo>(
@@ -21,6 +33,14 @@ const TodoSchema = new Schema<ITodo>(
       type: Schema.Types.ObjectId,
       ref: 'user',
       required: true,
+    },
+    categories: {
+      type: [CategorySchema],
+      default: [],
+    },
+    tag: {
+      type: TagSchema,
+      default: null
     },
   },
   {

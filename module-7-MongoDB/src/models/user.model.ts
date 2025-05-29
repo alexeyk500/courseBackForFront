@@ -34,11 +34,19 @@ const UserSchema = new Schema<IUserDoc>(
       type: String,
       required: [true, 'Password is required'],
       minlength: 6,
+      select: false,
     },
   },
   {
     timestamps: true,
     versionKey: false,
+    toJSON: {
+      transform: (doc, ret) => {
+        delete ret.password;
+        delete ret.__v;
+        return ret;
+      },
+    },
   },
 );
 
