@@ -22,6 +22,13 @@ const UserSchema = new Schema<IUserDoc>(
       unique: true,
       lowercase: true,
       trim: true,
+      validate: {
+        validator: (email: string) => {
+          const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return emailRegex.test(email);
+        },
+        message: 'Email is not valid',
+      },
     },
     password: {
       type: String,

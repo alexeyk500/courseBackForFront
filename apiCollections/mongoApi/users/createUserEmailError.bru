@@ -1,0 +1,18 @@
+meta {
+  name: createUserEmailError
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:3000/users
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "test-10@mail",
+    "password": "1234678"
+  }
+}
