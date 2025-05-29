@@ -1,9 +1,16 @@
 import express from 'express';
 import 'dotenv/config';
 import mongoose from 'mongoose';
+import errorHelper from './middlewares/errorHelper';
+import userRouter from './routes/user.router';
+
+const { PORT, MONGO_URL } = process.env;
 
 const app = express();
-const { PORT, MONGO_URL } = process.env;
+
+app.use(express.json());
+app.use(userRouter);
+app.use(errorHelper);
 
 const run = async () => {
   try {

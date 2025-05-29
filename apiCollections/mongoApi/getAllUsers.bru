@@ -1,0 +1,18 @@
+meta {
+  name: getAllUsers
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:3000/users
+  body: none
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "test-2@mail.ru",
+    "password": "1234567"
+  }
+}
