@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { CustomError } from '../errors/CustomError';
 
-const errorHelper = (
+const errorHendler = (
   err: Error,
   req: Request,
   res: Response,
@@ -11,7 +11,7 @@ const errorHelper = (
     res.status(err.statusCode).json({ message: err.message });
     return;
   }
-  res.status(500).send('Internal server error');
+  res.status(500).send(err);
 };
 
-export default errorHelper;
+export default errorHendler;

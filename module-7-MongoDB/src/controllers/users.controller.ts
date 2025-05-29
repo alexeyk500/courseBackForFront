@@ -1,8 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import UserModel, { IUser, IUserModel } from '../models/user.model';
-import { Error } from 'mongoose';
+import { Error as MongooseError } from 'mongoose';
 import { errorTransform } from '../utils/errorTransform';
 import { BadRequestError } from '../errors/BadRequestError';
+import { ConflictError } from '../errors/ConflictError';
+import { NotFoundError } from '../errors/NotFoundError';
+import { CastError } from '../errors/CastError';
 
 export const createUser = async (
   req: Request,
@@ -21,10 +24,14 @@ export const createUser = async (
     console.log('resultFindByCredentials', resultFindByCredentials);
     res.status(201).send(newUser);
   } catch (err) {
-    if (err instanceof Error.ValidationError) {
+    if (err instanceof MongooseError.ValidationError) {
       const errors = errorTransform(err);
-      console.log('errors', errors);
       next(new BadRequestError(errors[0].message));
+      return;
+    }
+
+    if ((err as Error).message.includes('E11000')) {
+      next(new ConflictError('Email should be unique'));
       return;
     }
 
@@ -52,9 +59,15 @@ export const getUserById = async (
 ) => {
   try {
     const id = req.params.id;
-    const user = await UserModel.findById(id).orFail();
+    const user = await UserModel.findById(id).orFail(
+      () => new NotFoundError('User does not exist'),
+    );
     res.send(user);
   } catch (err) {
+    if (err instanceof MongooseError.CastError) {
+      next(new CastError('Wrong format for user id'));
+      return;
+    }
     next(err);
   }
 };

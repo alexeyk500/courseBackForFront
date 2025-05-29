@@ -1,7 +1,7 @@
 import express from 'express';
 import 'dotenv/config';
 import mongoose from 'mongoose';
-import errorHelper from './middlewares/errorHelper';
+import errorHendler from './middlewares/errorHendler';
 import userRouter from './routes/user.router';
 import todoRouter from './routes/todo.router';
 
@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 app.use(userRouter);
 app.use(todoRouter);
-app.use(errorHelper);
+app.use(errorHendler);
 
 const run = async () => {
   try {
