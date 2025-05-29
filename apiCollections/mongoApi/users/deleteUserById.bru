@@ -1,0 +1,18 @@
+meta {
+  name: deleteUserById
+  type: http
+  seq: 1
+}
+
+delete {
+  url: http://localhost:3000/users/68382bfbcf7a46a5005a702b
+  body: none
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "test-2@mail.ru",
+    "password": "1234567"
+  }
+}

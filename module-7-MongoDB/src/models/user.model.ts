@@ -1,27 +1,37 @@
 import { Schema, Document, model, Model } from 'mongoose';
 
-interface IUser extends Document {
+export interface IUser extends Document {
   email: string;
   password: string;
+  createdAt: Date;
+  updatedAt: Date;
+  generateToken: () => string;
 }
 
-const UserSchema = new Schema<IUser>(
+interface IUserDoc extends Document, IUser {}
+
+export interface IUserModel extends Model<IUserDoc> {
+  findByCredentials: (email: string, password: string) => Promise<string>;
+}
+
+const UserSchema = new Schema<IUserDoc>(
   {
     email: {
       type: String,
-      required: true,
+      required: [true, 'Email is required'],
       unique: true,
       lowercase: true,
       trim: true,
     },
     password: {
       type: String,
-      required: true,
+      required: [true, 'Password is required'],
       minlength: 6,
     },
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 
@@ -41,6 +51,17 @@ UserSchema.pre('find', function (next) {
   next();
 });
 
-const UserModel: Model<IUser> = model('user', UserSchema);
+UserSchema.methods.generateToken = function () {
+  return 'token-123';
+};
+
+UserSchema.statics.findByCredentials = async function (
+  email: string,
+  password: string,
+) {
+  return new Promise((res) => res(email + ':' + password));
+};
+
+const UserModel: Model<IUser> = model<IUser, IUserModel>('user', UserSchema);
 
 export default UserModel;

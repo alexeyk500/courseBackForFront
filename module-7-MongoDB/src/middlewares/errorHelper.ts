@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { CustomError } from '../errors/CustomError';
 
 const errorHelper = (
   err: Error,
@@ -6,7 +7,11 @@ const errorHelper = (
   res: Response,
   next: NextFunction, // eslint-disable-line @typescript-eslint/no-unused-vars
 ) => {
-  res.status(500).send(err);
+  if (err instanceof CustomError) {
+    res.status(err.statusCode).json({ message: err.message });
+    return;
+  }
+  res.status(500).send('Internal server error');
 };
 
 export default errorHelper;
