@@ -28,3 +28,49 @@ export const getAllUsers = async (
     next(err);
   }
 };
+
+export const getUserById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = req.params.id;
+    const user = await UserModel.findById(id).orFail();
+    res.send(user);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const patchUserById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = req.params.id;
+    const user = req.body;
+    const newUser = await UserModel.findByIdAndUpdate(id, user, {
+      new: true,
+      runValidators: true,
+    }).orFail();
+    res.send(newUser);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteUserById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = req.params.id;
+    await UserModel.findByIdAndDelete(id).orFail();
+    res.send({ id });
+  } catch (err) {
+    next(err);
+  }
+};

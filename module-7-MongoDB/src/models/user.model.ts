@@ -25,6 +25,22 @@ const UserSchema = new Schema<IUser>(
   },
 );
 
+UserSchema.pre('save', function (next) {
+  console.log('this', this);
+  next();
+});
+
+UserSchema.post('save', function (doc, next) {
+  console.log('doc', doc);
+  next();
+});
+
+UserSchema.pre('find', function (next) {
+  const findQuery = this.getQuery();
+  console.log('findQuery', findQuery);
+  next();
+});
+
 const UserModel: Model<IUser> = model('user', UserSchema);
 
 export default UserModel;
