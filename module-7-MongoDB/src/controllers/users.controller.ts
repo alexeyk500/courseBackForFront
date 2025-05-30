@@ -45,7 +45,7 @@ export const getAllUsers = async (
   next: NextFunction,
 ) => {
   try {
-    const allUsers = await UserModel.find();
+    const allUsers = await UserModel.find().sort({ email: 1 });
     res.send(allUsers);
   } catch (err) {
     next(err);

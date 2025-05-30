@@ -10,3 +10,5 @@
 /module-5-CountriesProject/be-starter/node_modules/
 /module-7-MongoDB/node_modules/
 /module-7-MongoDB/.env
+/module-8-authJWT/.env
+/module-8-authJWT/node_modules/

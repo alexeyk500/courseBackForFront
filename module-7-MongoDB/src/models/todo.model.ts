@@ -15,8 +15,8 @@ interface ITodo extends Document {
   title: string;
   completed: boolean;
   owner: IUser;
-  categories: {title: string, color: string}[];
-  tag: {title: string, color: string} | null;
+  categories: { title: string; color: string }[];
+  tag: { title: string; color: string } | null;
 }
 
 const TodoSchema = new Schema<ITodo>(
@@ -40,7 +40,7 @@ const TodoSchema = new Schema<ITodo>(
     },
     tag: {
       type: TagSchema,
-      default: null
+      default: null,
     },
   },
   {

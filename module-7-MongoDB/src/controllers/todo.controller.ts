@@ -23,8 +23,20 @@ export const getAllTodos = async (
   next: NextFunction,
 ) => {
   try {
-    const allTodos = await TodoModel.find().orFail().populate('owner');
-    res.send(allTodos);
+    const limit = Number(req.query.limit) || 10;
+    const currentPage = Number(req.query.page) || 1;
+    const skip = (currentPage - 1) * limit;
+
+    const total = await TodoModel.countDocuments();
+    const totalPages = Math.ceil(total / limit);
+
+    const todos = await TodoModel.find()
+      .limit(limit)
+      .skip(skip)
+      .orFail()
+      .sort({ 'category.title': 1 })
+      .populate('owner');
+    res.send({ todos, limit, currentPage, totalPages });
   } catch (err) {
     next(err);
   }

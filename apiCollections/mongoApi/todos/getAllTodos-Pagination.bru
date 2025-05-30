@@ -1,0 +1,22 @@
+meta {
+  name: getAllTodos-Pagination
+  type: http
+  seq: 3
+}
+
+get {
+  url: http://localhost:3000/todos/?limit=5&page=1
+  body: none
+  auth: inherit
+}
+
+params:query {
+  limit: 5
+  page: 1
+}
+
+body:json {
+  {
+    "title": "Learn Node JS"
+  }
+}
