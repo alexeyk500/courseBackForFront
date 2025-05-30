@@ -7,6 +7,9 @@ import NotFoundError from '../errors/not-found-error';
 import { transformError } from '../helpers/transform-error';
 import User, { IUser } from '../models/user';
 
+const ONE_HOUR_IN_MS = 60*60*1000;
+const NODE_ENV = process.env.NODE_ENV;
+
 export const createUser = async (
   req: Request,
   res: Response,
@@ -19,7 +22,14 @@ export const createUser = async (
     const token = (newUser as IUser).generateToken();
     console.log('token', token);
 
-    res.status(201).send(newUser);
+    res.status(201)
+      .cookie('accessToken', token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: NODE_ENV === 'production',
+        maxAge: ONE_HOUR_IN_MS
+      })
+      .send(newUser);
   } catch (error) {
     if (error instanceof MongooseError.ValidationError) {
       const errors = transformError(error);

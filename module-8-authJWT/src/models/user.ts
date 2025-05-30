@@ -59,8 +59,8 @@ userSchema.pre('save', async function (next) {
 });
 
 userSchema.methods.generateToken = function () {
-  console.log('generateToken this', this);
-  return jwt.sign({id: this._id}, process.env.JWT_SECRET as string, {expiresIn: '1h'})
+  const jwtSecret = process.env.JWT_SECRET as string
+  return jwt.sign({id: this._id}, jwtSecret, {expiresIn: '1h'})
 };
 
 userSchema.statics.findByCredentials = async function (email, password) {

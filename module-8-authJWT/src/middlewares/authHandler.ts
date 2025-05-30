@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import authError from '../errors/authError';
 
 const authHandler = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.cookies.token;
+  const token = req.cookies.accessToken;
   const jwtSecret = process.env.JWT_SECRET as string;
 
   if (!token || !jwtSecret) {
