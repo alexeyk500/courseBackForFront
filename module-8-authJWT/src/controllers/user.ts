@@ -5,7 +5,7 @@ import BadRequestError from '../errors/bad-request-error';
 import ConflictError from '../errors/conflict-error';
 import NotFoundError from '../errors/not-found-error';
 import { transformError } from '../helpers/transform-error';
-import User from '../models/user';
+import User, { IUser } from '../models/user';
 
 export const createUser = async (
   req: Request,
@@ -16,6 +16,8 @@ export const createUser = async (
 
   try {
     const newUser = await User.create(user);
+    const token = (newUser as IUser).generateToken();
+    console.log('token', token);
 
     res.status(201).send(newUser);
   } catch (error) {

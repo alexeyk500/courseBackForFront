@@ -1,11 +1,12 @@
 import { Document, Model, Schema, model } from 'mongoose';
+import jwt from 'jsonwebtoken';
 
-interface IUser {
+export interface IUser {
   email: string;
   password: string;
   createdAt: Date;
   updatedAt: Date;
-  generateToken: () => void;
+  generateToken: () => string;
 }
 
 interface IUserDoc extends Document, IUser {}
@@ -57,7 +58,10 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-userSchema.methods.generateToken = function () {};
+userSchema.methods.generateToken = function () {
+  console.log('generateToken this', this);
+  return jwt.sign({id: this._id}, process.env.JWT_SECRET as string, {expiresIn: '1h'})
+};
 
 userSchema.statics.findByCredentials = async function (email, password) {
   console.log(email, password);
