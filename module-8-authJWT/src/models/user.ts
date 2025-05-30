@@ -1,5 +1,6 @@
 import { Document, Model, Schema, model } from 'mongoose';
 import jwt from 'jsonwebtoken';
+import authError from '../errors/authError';
 
 export interface IUser {
   email: string;
@@ -12,7 +13,7 @@ export interface IUser {
 interface IUserDoc extends Document, IUser {}
 
 interface IUserModel extends Model<IUserDoc> {
-  findByCredentials: (email: string, password: string) => void;
+  findByCredentials: (email: string, password: string) => Promise <IUserDoc | never>;
 }
 
 const userSchema = new Schema(
@@ -63,8 +64,17 @@ userSchema.methods.generateToken = function () {
   return jwt.sign({id: this._id}, jwtSecret, {expiresIn: '1h'})
 };
 
-userSchema.statics.findByCredentials = async function (email, password) {
+userSchema.statics.findByCredentials = async function (email: string, password: string) {
   console.log(email, password);
+  const user = await this.findOne({email})
+    .select('+password')
+    .orFail(()=>new authError('Wrong user credentials')) as IUserDoc
+
+  if (password !== user.password) {
+    throw new authError('Wrong user credentials');
+  }
+
+  return user;
 };
 
 const User = model<IUser, IUserModel>('user', userSchema);
