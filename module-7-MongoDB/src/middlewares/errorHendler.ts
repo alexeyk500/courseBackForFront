@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { CustomError } from '../errors/CustomError';
 
-const errorHendler = (
+const errorHandler = (
   err: Error,
   req: Request,
   res: Response,
@@ -14,4 +14,4 @@ const errorHendler = (
   res.status(500).send(err);
 };
 
-export default errorHendler;
+export default errorHandler;
