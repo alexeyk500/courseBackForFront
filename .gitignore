@@ -12,3 +12,6 @@
 /module-7-MongoDB/.env
 /module-8-authJWT/.env
 /module-8-authJWT/node_modules/
+/module-9-Shortners/shortner-fe/node_modules/
+/module-9-Shortners/shortner-be-starter/.env
+/module-9-Shortners/shortner-be-starter/node_modules/
