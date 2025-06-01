@@ -1,0 +1,15 @@
+meta {
+  name: Update short link
+  type: http
+  seq: 7
+}
+
+patch {
+  url: http://localhost:3001/shortner/67ead944d4f658fed643d053
+  body: json
+  auth: none
+}
+
+body:json {
+  {"url":"https://redux-toolkit.js.org"}
+}

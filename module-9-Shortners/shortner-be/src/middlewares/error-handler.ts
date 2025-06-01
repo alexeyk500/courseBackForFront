@@ -7,7 +7,7 @@ export const errorHandler = (
   _req: Request,
   res: Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _next: NextFunction
+  _next: NextFunction,
 ) => {
   if (err instanceof CustomError) {
     return res.status(err.statusCode).json(err.serializeError());

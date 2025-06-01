@@ -6,7 +6,7 @@
     "build": "tsc",
     "start": "ts-node src/app.ts",
     "dev": "ts-node-dev --respawn src/app.ts",
-    "lint": "eslint src/**/*.ts"
+    "lint": "eslint src/**/*.ts --fix"
   },
   "license": "ISC",
   "description": "",
@@ -25,15 +25,18 @@
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.13.14",
-    "@typescript-eslint/eslint-plugin": "^8.28.0",
-    "@typescript-eslint/parser": "^8.28.0",
     "dotenv": "^16.4.7",
-    "eslint": "^9.23.0",
     "globals": "^16.0.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.2",
-    "typescript-eslint": "^8.28.0"
+    "typescript-eslint": "^8.26.1",
+    "eslint": "^9.22.0",
+    "prettier": "^3.5.3",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.4.0",
+    "@typescript-eslint/eslint-plugin": "^8.26.1",
+    "@typescript-eslint/parser": "^8.26.1"
   },
   "volta": {
     "node": "22.14.0",
