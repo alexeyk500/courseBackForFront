@@ -10,6 +10,7 @@ import shortnerRouter from './shortners/shortner.router';
 import userRouter from './users/user.router';
 import { authHandler } from './middlewares/authHandler';
 import { fakeHandler } from './middlewares/fakeHandler';
+import { errorLogger, requestLogger } from './middlewares/loggerHandler';
 
 const app = express();
 
@@ -26,11 +27,16 @@ app.use(cors({
 }))
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(requestLogger);
+
 app.use(userRouter);
 
 app.use(authHandler);
 
 app.use(shortnerRouter);
+
+app.use(errorLogger);
 app.use(errorHandler);
 
 const run = async () => {
