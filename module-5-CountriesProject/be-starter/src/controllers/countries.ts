@@ -27,7 +27,8 @@ export const getCountryByName = async (
 
   const country = data[0];
   if (!country) {
-    return next(new NotFoundError('Country not found'));
+    next(new NotFoundError('Country not found'));
+    return
   }
 
   const neighborsCodes = country.borders?.join(',');

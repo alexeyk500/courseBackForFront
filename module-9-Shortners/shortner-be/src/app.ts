@@ -12,8 +12,8 @@ const app = express();
 
 const { PORT, MONGO_URL } = process.env;
 
-app.use(cookieParser());
 app.use(express.json());
+app.use(cookieParser());
 app.use(userRouter);
 
 app.use(authHandler);

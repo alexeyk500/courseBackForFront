@@ -3,9 +3,10 @@ import { Schema, model, Document, Model } from 'mongoose';
 export interface IShortner {
   originalLink: string;
   shortLink: string;
-  owner: string;
+  owner: Schema.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
+  checkOwner: (owner: string) => boolean;
 }
 
 export interface IShortnerDocument extends IShortner, Document {}
@@ -23,7 +24,7 @@ const ShortnerSchema = new Schema<IShortnerDocument>(
       required: [true, 'Short link is required'],
     },
     owner: {
-      type: String,
+      type: Schema.Types.ObjectId,
       ref: 'user',
       required: [true, 'Owner is required'],
     },
@@ -33,6 +34,10 @@ const ShortnerSchema = new Schema<IShortnerDocument>(
     versionKey: false,
   },
 );
+
+ShortnerSchema.methods.checkOwner = async function (ownerId: string) {
+  return this.owner.toString() === ownerId.toString();
+};
 
 const ShortnerModel = model<IShortnerDocument, IShortnerModel>(
   'item',
