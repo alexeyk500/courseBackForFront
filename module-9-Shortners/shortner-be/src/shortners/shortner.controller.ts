@@ -13,11 +13,13 @@ export const createShortLink = async (
   const originalLink = req.body.url;
 
   try {
+    const owner = res.locals.user;
     const shortLink = await getShortLink(originalLink);
 
     const newShortner = (await ShortnerModel.create({
       originalLink,
       shortLink,
+      owner,
     })) as unknown as IShortnerDocument;
 
     res.status(201).json({
