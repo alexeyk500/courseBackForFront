@@ -9,8 +9,11 @@ import { errorHandler } from './middlewares/error-handler';
 import shortnerRouter from './shortners/shortner.router';
 import userRouter from './users/user.router';
 import { authHandler } from './middlewares/authHandler';
-import { fakeHandler } from './middlewares/fakeHandler';
+// import { fakeHandler } from './middlewares/fakeHandler';
 import { errorLogger, requestLogger } from './middlewares/loggerHandler';
+
+import helmet from 'helmet';
+
 
 const app = express();
 
@@ -18,8 +21,13 @@ const { PORT, MONGO_URL, FRONTEND_URL } = process.env;
 
 // Доп мидлвары для безопасности сервера
 app.disable('x-powered-by');
-app.use(fakeHandler);
+// app.use(fakeHandler);
 
+app.use(helmet({
+  contentSecurityPolicy: false,
+  xDownloadOptions: false,
+  xPoweredBy: false,
+}));
 
 app.use(cors({
   origin: FRONTEND_URL as string,
