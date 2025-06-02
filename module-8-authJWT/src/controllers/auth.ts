@@ -5,7 +5,7 @@ import { transformError } from '../helpers/transform-error';
 import BadRequestError from '../errors/bad-request-error';
 import ConflictError from '../errors/conflict-error';
 
-const ONE_HOUR_IN_MS = 60*60*1000;
+const ONE_HOUR_IN_MS = 60 * 60 * 1000;
 const NODE_ENV = process.env.NODE_ENV;
 
 export const createUser = async (
@@ -19,12 +19,13 @@ export const createUser = async (
     const newUser = await User.create(user);
     const token = (newUser as IUser).generateToken();
 
-    res.status(201)
+    res
+      .status(201)
       .cookie('accessToken', token, {
         httpOnly: true,
         secure: NODE_ENV === 'production',
-        sameSite: NODE_ENV === 'production',
-        maxAge: ONE_HOUR_IN_MS
+        sameSite: NODE_ENV === 'production' ? 'strict' : 'lax',
+        maxAge: ONE_HOUR_IN_MS,
       })
       .send(newUser);
   } catch (error) {
@@ -54,24 +55,26 @@ export const logInUser = async (
     const user = await User.findByCredentials(email, password);
     const token = (user as unknown as IUser).generateToken();
 
-    res.status(201)
+    res
+      .status(201)
       .cookie('accessToken', token, {
         httpOnly: true,
         secure: NODE_ENV === 'production',
-        sameSite: NODE_ENV === 'production',
-        maxAge: ONE_HOUR_IN_MS
+        sameSite: NODE_ENV === 'production' ? 'strict' : 'lax',
+        maxAge: ONE_HOUR_IN_MS,
       })
       .send(user);
-
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
 export const logOutUser = async (
   req: Request,
   res: Response,
   next: NextFunction, // eslint-disable-line @typescript-eslint/no-unused-vars
 ) => {
-  res.clearCookie('accessToken', {httpOnly: true}).send({message: 'success'})
-}
+  res
+    .clearCookie('accessToken', { httpOnly: true })
+    .send({ message: 'success' });
+};

@@ -1,5 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { getShortLink } from './shortner.service';
+import ShortnerModel, { IShortnerDocument } from './shortner.model';
+import { Error as MongooseError } from 'mongoose';
+import { transformError } from '../helpers/transform-error';
+import BadRequestError from '../errors/bad-request-error';
 
 export const createShortLink = async (
   req: Request,
@@ -10,8 +14,23 @@ export const createShortLink = async (
 
   try {
     const shortLink = await getShortLink(originalLink);
-    res.status(201).json({ originalLink, shortLink });
-  } catch (err) {
+
+    const newShortner = (await ShortnerModel.create({
+      originalLink,
+      shortLink,
+    })) as unknown as IShortnerDocument;
+
+    res.status(201).json({
+      id: newShortner._id,
+      originalLink: newShortner.originalLink,
+      shortLink: newShortner.shortLink,
+    });
+  } catch (err: any) {
+    if (err instanceof MongooseError.ValidationError) {
+      const errors = transformError(err);
+      next(new BadRequestError(errors[0].message));
+    }
+    console.log(err);
     next(err);
   }
 };

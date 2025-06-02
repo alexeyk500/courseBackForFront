@@ -9,12 +9,12 @@ export const createTodo = async (
   next: NextFunction,
 ) => {
   const todo = req.body;
+  const userId = res.locals.user.id;
 
-  todo.owner = '680cab4c76b59ccf2b3203e3';
+  todo.owner = userId;
 
   try {
     const newTodo = await Todo.create(todo);
-
     res.status(201).send(newTodo);
   } catch (error) {
     next(error);
@@ -28,12 +28,13 @@ export const getAllTodos = async (
 ) => {
   const limit = Number(req.query.limit) || 10;
   const page = Number(req.query.page) || 1;
+  const userId = res.locals.user.id;
 
   try {
-    const totalDocs = await Todo.countDocuments();
+    const totalDocs = await Todo.countDocuments({ owner: userId });
     const totalPages = Math.ceil(totalDocs / limit);
 
-    const todos = await Todo.find()
+    const todos = await Todo.find({ owner: userId })
       .populate('owner')
       .limit(limit)
       .skip((page - 1) * limit);
@@ -49,12 +50,14 @@ export const removeTodoById = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const id = req.params.id;
+  const todoId = req.params.id;
+  const userId = res.locals.user.id;
 
   try {
-    await Todo.findByIdAndDelete(id).orFail(
+    await Todo.deleteOne({ _id: todoId, owner: userId }).orFail(
       () => new NotFoundError('Todo does not exist!'),
     );
+    res.send({ message: 'todo deleted' });
   } catch (error) {
     next(error);
   }

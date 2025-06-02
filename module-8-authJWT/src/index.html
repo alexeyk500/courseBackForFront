@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <h1>Login</h1>
+  <form id="login-form" autocomplete="off">
+    <input type="email" name="email">
+    <input type="password" name="password">
+    <button type="submit">Login</button>
+  </form>
+
+  <h2>Create todo</h2>
+  <form id="create-todo">
+    <input type="text" name="title" placeholder="Todo title">
+    <button type="submit">Create</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('login-form')
+
+    form.onsubmit = (e) => {
+      e.preventDefault()
+
+      const formData = new FormData(form)
+      const data = Object.fromEntries(formData.entries())
+
+      fetch('http://localhost:3000/sign-in', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+        credentials: 'include'
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert(data.message)
+      })
+    }
+
+
+    const createTodoForm = document.getElementById('create-todo')
+    createTodoForm.onsubmit = (e) => {
+      e.preventDefault()
+
+      const formData = new FormData(createTodoForm)
+      const data = Object.fromEntries(formData.entries())
+
+      fetch('http://localhost:3000/todos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+        credentials: 'include'
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert(JSON.stringify(data))
+      })
+    }
+
+  </script>
+</body>
+</html>
