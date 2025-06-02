@@ -1,0 +1,15 @@
+meta {
+  name: ShortenURL Ulvis
+  type: http
+  seq: 2
+}
+
+post {
+  url: https://api.encurtador.dev/encurtamentos
+  body: json
+  auth: none
+}
+
+body:json {
+  { "url": "https://google.com" }
+}

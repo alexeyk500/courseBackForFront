@@ -1,0 +1,15 @@
+meta {
+  name: Create short link
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:3000/shortners
+  body: json
+  auth: none
+}
+
+body:json {
+  {"url":"https://redux-toolkit.js.org/api/createAsyncThunk-2"}
+}
