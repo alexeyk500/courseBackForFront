@@ -22,6 +22,8 @@
 
 /module-10-Improvements/shortner-be/.env
 /module-10-Improvements/shortner-be/node_modules/
-/module-10-Improvements/shortner-be/errors.log
-/module-10-Improvements/shortner-be/requests.log
-/module-10-Improvements/shortner-fe/node_modules/
+/module-10-Improvements/shortner-be/*.log
+
+/module-10-Improvements/08-custom-logs/.env
+/module-10-Improvements/08-custom-logs/node_modules/
+/module-10-Improvements/08-custom-logs/*.log
