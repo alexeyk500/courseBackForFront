@@ -4,12 +4,14 @@ import mongoose from 'mongoose';
 
 import { errorHandler } from './middlewares/error-handler';
 import shortnerRouter from './shortners/shortner.router';
+import userRouter from './users/user.router';
 
 const app = express();
 
 const { PORT, MONGO_URL } = process.env;
 
 app.use(express.json());
+app.use(userRouter);
 app.use(shortnerRouter);
 app.use(errorHandler);
 
