@@ -1,0 +1,270 @@
+1)  Арендуем VPS, выбираем OS Ubuntu последней версии
+    - Выбираем провайдера
+    - Оплачиваем сервер
+    - Конфигурируем сервер
+    - Копируем и закидываем провайдеру ssh ключ
+       $ cat ~/.ssh/id_rsa.pub
+
+    По итогу у нас должен внешний остаться ip адрес сервера - 78.140.240.17
+    и возможность логиниться на него под root
+       $ ssh root@78.140.240.17
+
+2) Обновление сервера и устанвка БД
+    - Обновление Ubuntu
+        $ apt update
+        $ apt upgrade
+
+    - Перезагрузка сервера
+        $ shutdown now -r
+
+    - Установка MongoDB
+        официальная документация MongoDB
+        https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/#std-label-install-mdb-community-ubuntu
+
+        $ sudo apt-get install gnupg curl
+
+        $ curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
+            sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg \
+            --dearmor
+        $ echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
+        $ sudo apt-get update
+
+        $ sudo apt-get install -y mongodb-org
+
+        $ sudo systemctl start mongod
+        $ sudo systemctl enable mongod
+
+        $ sudo systemctl status mongod
+
+    По итогу после выполнения последней команды MongoDB должна быть в статусе - active
+
+3) Управление пользователями на сервере
+    - Создаем нового пользователя на сервере
+        $ adduser admin
+    - Добавляем созданного пользователя в sudo группу
+        $ usermod -aG sudo admin
+    - Переключаемся в созданного пользователя
+        $ su admin
+    - Чтобы добавить новому пользователю возможность авторизовываться, необходимо добавить его публичный ssh ключ на сервер
+        $ cd ~
+        $ mkdir .ssh
+        $ cd .ssh
+        $ nano authorized_keys
+            Копипастом вставляем в файл свой публичный ключ с рабочего компьютера
+    - Для безопасности файл с авторизованными ключами необходимо закрыть от редактирования для всех пользователей, кроме нашего.
+        $ chmod 644 ~/.ssh/authorized_keys
+    - Пробуем логиниться под новым юзером
+        $ ssh admin@78.140.240.17
+    - Для отключения входа под root пользователем надо отредактировать конфиг службы sshd и затем ее перезапустить:
+        $ sudo nano /etc/ssh/sshd_config
+            Находим и исправляем строку "PermitRootLogin no"
+        $ sudo systemctl restart ssh.service
+4) Установка веб-сервера Nginx
+    - Установка и запуск Nginx
+        $ sudo apt install nginx
+        $ sudo service nginx start
+    - Проверяем что на нашем хосте по адресу http://78.140.240.17/ отображается в браузере стартовая страница Nginx
+
+5) Фронтенд на сервере
+    - добавляем корневой пользователя папке права на чтения для всех пользователей
+        $ sudo chmod 755 /home/admin
+    - проверяем права у своей корневой папки
+        $ ls -lah /home/admin
+        (должны быть: drwxr-xr-x)
+    - В корневой папке пользователя admin создадим две папки под файлы фронтенд и бэкенд частей
+        $ mkdir shortner-fe
+        $ mkdir shortner-be
+    - Билдим фронт у себя на машине
+        через файл package.json скрипт "build" или командой в терминале папки проекта: $ npm run build
+        Получаем у себя на машине папку "build" с собранным проектом фронта
+    - копируем содержимое папки на удаленный сервер в созданую ранее папку "shortner-fe"
+        $ scp -Cr ./build/* admin@78.140.240.17:/home/admin/shortner-fe
+    - проверяем копирование файлов в папку ls -lah /home/admin/shortner-fe
+    - создаем новый конфиг для nginx в папке /etc/nginx/sites-enabled
+         $ sudo vi /etc/nginx/sites-enabled/shortner
+         - и определяем в этом файле минимальную конфигурацю для нашего сайта
+            server {
+              listen 80;
+              server_name 78.140.240.17;      # server_name <ip>; или домен
+
+              root /home/admin/shortner-fe;   # root /home/<user>/<folder>;
+
+              location / {
+                 try_files $uri $uri/ =404;
+              }
+            }
+         ( i - войти в режим редактирования vim, закончили -> esc, :wq - сохранить и выйти )
+
+    - В файле основного конфига nginx убираем дефолтную настройку и указываем наш сайт
+        $ sudo vi /etc/nginx/nginx.conf
+            в строке include /etc/nginx/sites-enabled/*; -
+            меняем * на созданную нами конфигурацию shortner
+            (получится вот так - include /etc/nginx/sites-enabled/shortner;)
+    - Проверяем конфигурацию nginx
+        $ sudo nginx -t
+    - Перезапускаем nginx
+        $ sudo service nginx restart
+    - Проверяем что на нашем хосте по адресу http://78.140.240.17/ отображается в браузере наш фронт
+
+5) Добавление домена
+    - Идем на рег.ру и покупаем там домен
+    - Заходим в панель управления доменом и меняем у записей типа А ip-адрес на ip адрес нашего хоста 78.140.240.17
+    - Ждем когда установятся на ДНС ip-адреса на наш домен
+
+6) Бэкенд на сервере
+    - Билдим бэкенд
+        $ npm run build
+        (получили папку build в соотвествии с настройками tsconfig.json)
+    - Копируем всю папку dist вместе с ее содержимым на сервер в созданную ранее папку shortner-be
+    $ scp -Cr dist admin@78.140.240.17:/home/admin/shortner-be
+    - Редактируем конфигурационный файл .env.production указав там url нашего фронта
+        (FRONTEND_URL="http://my-shorly.ru")
+    - Копируем .env.production как .env файл в паку бэкенда на сервере
+    $ scp -Cr .env.production admin@78.140.240.17:/home/admin/shortner-be/.env
+        - Копируем .env.production как .env файл в паку dist бэкенда на сервере
+        $ scp -Cr .env.production admin@78.140.240.17:/home/admin/shortner-be/dist/.env
+    - Копируем package.json как .env файл в паку бэкенда на сервере
+    $ scp -Cr package.json admin@78.140.240.17:/home/admin/shortner-be/package.json
+    - Копируем package-lock.json как .env файл в паку бэкенда на сервере
+    $ scp -Cr package-lock.json admin@78.140.240.17:/home/admin/shortner-be/package-lock.json
+    - Устанавливаем Volta и через не nodeJS на сервер
+    $ curl https://get.volta.sh | bash
+    - Перезапускаем сессию в терминале что бы запустилась Volta
+        $ exit
+        $ ssh admin@78.140.240.17
+    - Проверяем что Volta запустилась
+        $ volta -v
+    - Устанавливаем LTS версию node
+        $ volta install node
+    - Проверяем что node установилась
+        $ node -v
+    - Переходим в паку бэкенда
+        $ cd shortner-be
+    - Устанавливаем только продовские зависимости для бэка
+        $ npm i --omit=dev
+    - Проверяем что бы в папке shortner-be появилась папка node_modules
+        $ ls
+    - Запускаем для теста наш бэк командой
+        $ node dist/app.js
+        (Должны появиться логи о подключении к MongoDB и старте сервера на порту 3001
+         и наш бэк должен отвечать ошибкой авторизации если стучаться в него через браузер
+         http://78.140.240.17:3001 )
+
+7) Стабильность бэкенда
+    - Установим пакет pm2 для запуска бэкенда в бэкграунде сервера
+        $ npm install pm2 -g
+    - Запустим приложение бэкенда уже как процее pm2
+        $ pm2 start /home/admin/shortner-be/dist/app.js
+    - Настроим автозапуск бэкенда при перезапуске сервера
+        $ pm2 startup
+        (нам выдадут скрипт, который надо скопировать и выполнить)
+        (sudo env PATH=$PATH:/home/admin/.volta/tools/image/node/22.16.0/bin /home/admin/.volta/tools/image/packages/pm2/lib/node_modules/pm2/bin/pm2 startup systemd -u admin --hp /home/admin)
+    - Сохраняем изменения pm2
+        $ pm2 save
+        (возможно потребуется установить Volta и nodeJS для root, если там их нет)
+    - Проверяем что наш бэк отвечает ошибкой авторизации если стучаться в него через браузер: http://78.140.240.17:3001
+
+8) Связь бэкенда и фронтенда
+    - Для связи бэкенда и фронтэнда нам нужно настроить проксирование в Nginx всех запросов, что отправляет на фронт на "/api"
+      для этого добавим проксирование в конфигурацию nginx
+      $ sudo vi /etc/nginx/sites-enabled/shortner
+
+          "location /api/ {
+                   rewrite ^/api/(.*)$ /$1 break;
+                   proxy_pass http://localhost:3001;
+                   proxy_http_version 1.1;
+                   proxy_set_header Upgrade $http_upgrade;
+                   proxy_set_header Connection 'upgrade';
+                   proxy_set_header Host $host;
+                   proxy_set_header X-Real-IP $remote_addr;
+                   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                   proxy_set_header X-Forwarded-Proto $scheme;
+          }"
+
+          (  - Итоговый nginx конфиг
+                server {
+                              listen 80;
+                              server_name 78.140.240.17;    # <ip> или домен
+
+                              root /home/admin/shortner-fe;   # /home/<user>/<folder>;
+
+                              location / {
+                                 try_files $uri $uri/ =404;
+                              }
+
+                              location /api/ {
+                                   rewrite ^/api/(.*)$ /$1 break;
+                                   proxy_pass http://localhost:3001;
+                                   proxy_http_version 1.1;
+                                   proxy_set_header Upgrade $http_upgrade;
+                                   proxy_set_header Connection 'upgrade';
+                                   proxy_set_header Host $host;
+                                   proxy_set_header X-Real-IP $remote_addr;
+                                   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                                   proxy_set_header X-Forwarded-Proto $scheme;
+                               }
+                 }
+             )
+    - Проверяем конфигурацию nginx
+        $ sudo nginx -t
+    - Перезапускаем nginx
+        $ sudo service nginx restart
+    - Проверяем на сайте что мы можем зарегаться и что нам приходит cookies с accessToken
+
+9) Настройка файервола
+    - Установка файервола ufw
+        $ sudo apt-get install ufw
+    - Установка правил файервола
+        $ sudo ufw allow ssh
+        $ sudo ufw allow http
+        $ sudo ufw allow https
+    - Запуск файервола
+        $ sudo ufw enable
+    - Проверка статуса файервола
+        % sudo ufw status
+
+10) Добавление https
+    - Официальный сай certbot
+        https://certbot.eff.org/instructions?ws=nginx&os=snap
+    - Установка пакетного менеджера snapd
+        $ sudo apt update
+        $ sudo apt install snapd
+    - Разлогиниться и залогиниться в польтзователя, что бы запустился пакетный менеджер snapd
+        $ exit
+        $ ssh admin@78.140.240.17
+    - Установка удаление предустанвленного в Ubuntu certbot-auto
+        $ sudo apt-get remove certbot
+    - Установка certbot
+        $ sudo snap install --classic certbot
+    - Созданеие линка на certbot
+        $ sudo ln -s /snap/bin/certbot /usr/bin/certbot
+
+    - Изменить в конфигурации nginx ip адрес хоста на имя домена
+         $ sudo vi /etc/nginx/sites-enabled/shortner
+            строку server_name 78.140.240.17;  заменить на server_name my-shorly.ru;
+    - Проверяем конфигурацию nginx
+        $ sudo nginx -t
+    - Перезапускаем nginx
+        $ sudo service nginx restart
+
+    - Подключение сертификата к nginx
+        $ sudo certbot --nginx
+    - Запуск автобновлений для сертификатов
+        $ sudo certbot renew --dry-run
+
+11) Добавление http2
+    - Добавление http2 производится так же в настройках конфигурационного файла nginx
+    $ sudo vi /etc/nginx/sites-enabled/shortner
+        строку listen 443 ssl; # managed by Certbot;
+        заменить на listen 443 http2 ssl;
+
+    - Проверяем конфигурацию nginx
+        $ sudo nginx -t
+    - Перезапускаем nginx
+        $ sudo service nginx restart
+
+    - Проверяем во вкладке Network браузера что запросы идут по протоколу http2
+
+
+
+
